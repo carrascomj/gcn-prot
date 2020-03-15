@@ -1,6 +1,17 @@
 gcn-prot
 ==============================
 
+.. image:: https://img.shields.io/travis/opencobra/memote.svg
+        :target: https://travis-ci.org/carrascomj/gcn-prot
+
+.. image:: https://codecov.io/gh/carrascomj/gcn-prot/branch/master/graph/badge.svg
+        :target: https://codecov.io/gh/carrascomj/gcn-prot
+        :alt: Coverage
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/ambv/black
+   :alt: Black
+
 Graph convolutional networks to perform structural learning of proteins. The
 starting point is the work of [Zamora-Resendiz and Crivelli, 2019](https://www.biorxiv.org/content/10.1101/610444v1.full)
 (repository on [Github](https://github.com/CrivelliLab/Protein-Structure-DL)).
