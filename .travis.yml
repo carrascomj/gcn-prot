@@ -1,0 +1,16 @@
+language: python
+dist: xenial
+
+before_install:
+  - pip install pytest-cov isort black
+
+install:
+ - pip install -e .
+
+script:
+ - black --check src/data
+ - isort -rc --diff src/ tests/
+ - py.test --cov=./
+
+after_success:
+ - pip install codecov; codecov;
