@@ -1,8 +1,8 @@
 gcn-prot
 ==============================
 
-.. image:: https://travis-ci.com/carrascomj/gcn-prot.svg?branch=master
-        :target: https://travis-ci.com/github/carrascomj/gcn-prot
+.. image:: https://img.shields.io/travis/opencobra/memote.svg
+        :target: https://travis-ci.org/carrascomj/gcn-prot
 
 .. image:: https://codecov.io/gh/carrascomj/gcn-prot/branch/master/graph/badge.svg
         :target: https://codecov.io/gh/carrascomj/gcn-prot
@@ -24,7 +24,7 @@ Jorge Carrasco Muriel (@carrascomj)
 This project was developed for the Advance Machine Learning course at DTU.
 
 Project Organization
---------------------
+------------
 
     ├── LICENSE
     ├── Makefile           <- Makefile with commands like `make data` or `make train`
