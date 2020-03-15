@@ -11,7 +11,7 @@ install:
 
 script:
  - black --check gcn_prot/data gcn_prot/models tests
- - isort -rc --diff gcn_prot/data gcn_prot/models tests/
+ - isort -rc --diff --check-only gcn_prot/data tests/
  - py.test --cov=./
 
 after_success:
