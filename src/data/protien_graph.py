@@ -1,17 +1,15 @@
 """Split of data and structure to hold the graph dataset."""
 import os
-import numpy as np
-
 from glob import glob
+
+import numpy as np
 from sklearn.model_selection import train_test_split
 
 
 class ProtienGraphDataset:
     """Build protein graph dataset, reading IO at index time."""
 
-    def __init__(
-        self, data, nb_nodes=185, task_type="classification", nb_classes=2
-    ):
+    def __init__(self, data, nb_nodes=185, task_type="classification", nb_classes=2):
         """Initialize object.
 
         Default values correspond to the KrasHras experiment
@@ -143,10 +141,7 @@ class ProtienGraphDataset:
         """
         sequence_enc = np.array(
             [
-                [
-                    pos / np.power(10000, 2 * (j // 2) / nb_dims)
-                    for j in range(nb_dims)
-                ]
+                [pos / np.power(10000, 2 * (j // 2) / nb_dims) for j in range(nb_dims)]
                 if pos != 0
                 else np.zeros(nb_dims)
                 for pos in seq
@@ -171,13 +166,7 @@ def get_longest(path):
 
 
 def get_datasets(
-    data_path,
-    task_type,
-    nb_classes,
-    nb_nodes=None,
-    split=None,
-    k_fold=None,
-    seed=1234,
+    data_path, task_type, nb_classes, nb_nodes=None, split=None, k_fold=None, seed=1234,
 ):
     """Generate train/test/validation splits for proein graph data.
 
@@ -266,14 +255,8 @@ def get_datasets(
         data_valid = np.concatenate([x_valid, y_valid], axis=-1)
 
     # Initialize Dataset Iterators
-    train_dataset = ProtienGraphDataset(
-        data_train, nb_nodes, task_type, nb_classes,
-    )
-    valid_dataset = ProtienGraphDataset(
-        data_valid, nb_nodes, task_type, nb_classes
-    )
-    test_dataset = ProtienGraphDataset(
-        data_test, nb_nodes, task_type, nb_classes
-    )
+    train_dataset = ProtienGraphDataset(data_train, nb_nodes, task_type, nb_classes,)
+    valid_dataset = ProtienGraphDataset(data_valid, nb_nodes, task_type, nb_classes)
+    test_dataset = ProtienGraphDataset(data_test, nb_nodes, task_type, nb_classes)
 
     return train_dataset, valid_dataset, test_dataset

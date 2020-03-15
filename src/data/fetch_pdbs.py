@@ -9,9 +9,12 @@ pairs. PDBs are save into folders corresponding to class and PDB identifier.
 Script parallelizes fetches over multiple cores using MPI.
 
 """
-import os, wget
-import numpy as np
 import argparse
+import os
+
+import numpy as np
+
+import wget
 from mpi4py import MPI
 
 ###############################################################################
@@ -21,8 +24,7 @@ seed = 1234
 
 
 def parse_args():
-    """
-    """
+    """Parse arguments."""
     # Parse Command Line Arguments
     parser = argparse.ArgumentParser("generate_protein_graphs.py")
     add_arg = parser.add_argument
@@ -33,11 +35,7 @@ def parse_args():
 
 
 def fetch_PDB(path, pdb_id):
-    """
-    Method fetches pdb file from Protein Data Bank repo and stores file in
-    designated path.
-
-    """
+    """Fetch pdb file from Protein Data Bank repo and store it in `path`."""
     # Download PDB file from database.
     url = "https://files.rcsb.org/download/"  # URL used to fetch PDB files
     file_path = path + pdb_id.lower() + ".pdb"

@@ -7,6 +7,7 @@ Convolution Neural Networks (GCNNs). These layers were written to operate using 
 
 """
 import numpy as np
+
 import tensorflow as tf
 
 ################################################################################

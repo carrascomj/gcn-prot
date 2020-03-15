@@ -11,18 +11,15 @@ cross entropy as loss function. The following metrics are defined for trainier:
 
 """
 import time
-import numpy as np
-import tensorflow as tf
 
-from sklearn.metrics import (
-    accuracy_score,
-    precision_score,
-    recall_score,
-    f1_score,
-    roc_auc_score,
-)
-from .base_trainer import BaseTrainer, bg
+import numpy as np
+from sklearn.metrics import (accuracy_score, f1_score, precision_score,
+                             recall_score, roc_auc_score)
+
+import tensorflow as tf
 from models import get_model
+
+from .base_trainer import BaseTrainer, bg
 
 
 class ClassifierTrainer(BaseTrainer):

@@ -8,13 +8,9 @@ This script defines a graph convolutional network for tensorflow.
 """
 import tensorflow as tf
 from models import Model
-from .graph_conv import (
-    MultiHeadAttention,
-    AverageSeqGraphPool,
-    GraphKernels,
-    GraphConv,
-    VCAInput,
-)
+
+from .graph_conv import (AverageSeqGraphPool, GraphConv, GraphKernels,
+                         MultiHeadAttention, VCAInput)
 
 
 class GCNN(Model):

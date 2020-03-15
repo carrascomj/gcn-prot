@@ -12,11 +12,13 @@ for different training experiments:
     - evaluate()
 
 """
-import os
 import logging
 import multiprocessing
+import os
+
 import numpy as np
 import pandas as pd
+
 import tensorflow as tf
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"

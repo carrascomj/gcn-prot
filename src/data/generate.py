@@ -10,12 +10,14 @@ BUGS:
 match the sequence of the chain. These PDBs are not processed.
 
 """
+import argparse
 import os
+
 import numpy as np
 import pandas as pd
-from scipy.spatial.distance import euclidean, cosine
+from scipy.spatial.distance import cosine, euclidean
 from scipy.stats import percentileofscore as perc
-import argparse
+
 from mpi4py import MPI
 
 ################################################################################
@@ -51,8 +53,7 @@ residues = [
 
 
 def parse_args():
-    """
-    """
+    """Parse CLI arguments."""
     # Parse Command Line Arguments
     parser = argparse.ArgumentParser("generate_protein_graphs.py")
     add_arg = parser.add_argument
@@ -63,7 +64,15 @@ def parse_args():
 
 
 def parse_pdb(path, chain, all_chains=False, first=False):
-    """
+    """Parse PDB file information.
+
+    Parameters
+    ----------
+    path: str
+    chain: str
+    all_chains: bool
+    first: bool
+
     """
     # Parse residue, atom type and atomic coordinates
     seq_data = []
