@@ -195,9 +195,7 @@ class BaseTrainer(object):
 
             if load_prev:
                 if os.path.exists(self.output_dir + "/model/model.ckpt"):
-                    self.saver.restore(
-                        sess, self.output_dir + "/model/model.ckpt"
-                    )
+                    self.saver.restore(sess, self.output_dir + "/model/model.ckpt")
 
             # Loop over epochs
             best_metric = None
@@ -215,9 +213,7 @@ class BaseTrainer(object):
                 # Evaluate on this epoch
                 if valid_data_loader is not None:
                     sess.run(self.running_vars_initializer)
-                    summary.update(
-                        self.evaluate(valid_data_loader, sess, mode="valid")
-                    )
+                    summary.update(self.evaluate(valid_data_loader, sess, mode="valid"))
 
                 metric = summary[early_stop_metric]
 
@@ -235,9 +231,7 @@ class BaseTrainer(object):
                             )
                             best_metric = metric
                             epochs_since_best = 0
-                            self.saver.save(
-                                sess, self.output_dir + "/model/model.ckpt"
-                            )
+                            self.saver.save(sess, self.output_dir + "/model/model.ckpt")
                         else:
                             epochs_since_best += 1
                     else:
@@ -249,9 +243,7 @@ class BaseTrainer(object):
                             )
                             best_metric = metric
                             epochs_since_best = 0
-                            self.saver.save(
-                                sess, self.output_dir + "/model/model.ckpt"
-                            )
+                            self.saver.save(sess, self.output_dir + "/model/model.ckpt")
                         else:
                             epochs_since_best += 1
 
@@ -273,9 +265,7 @@ class BaseTrainer(object):
             summary = dict()
             if test_data_loader is not None:
                 sess.run(self.running_vars_initializer)
-                summary.update(
-                    self.evaluate(test_data_loader, sess, mode="test")
-                )
+                summary.update(self.evaluate(test_data_loader, sess, mode="test"))
             self.final_score = summary["test_loss"]
 
             # Save summary, checkpoint

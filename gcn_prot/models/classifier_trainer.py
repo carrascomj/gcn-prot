@@ -13,8 +13,13 @@ cross entropy as loss function. The following metrics are defined for trainier:
 import time
 
 import numpy as np
-from sklearn.metrics import (accuracy_score, f1_score, precision_score,
-                             recall_score, roc_auc_score)
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
 
 import tensorflow as tf
 from models import get_model
@@ -53,9 +58,7 @@ class ClassifierTrainer(BaseTrainer):
         # Add ouput classification layer
         Y = tf.placeholder(tf.float32, [None, nb_classes])
         self.inputs.append(Y)
-        y_out = tf.layers.dense(
-            self.outputs[0], nb_classes, name="presoftmax_out"
-        )
+        y_out = tf.layers.dense(self.outputs[0], nb_classes, name="presoftmax_out")
         self.outputs.append(y_out)
 
         # Add Loss and Optimizers
@@ -103,9 +106,7 @@ class ClassifierTrainer(BaseTrainer):
             + tf.get_collection(tf.GraphKeys.LOCAL_VARIABLES, scope="recall")
             + tf.get_collection(tf.GraphKeys.LOCAL_VARIABLES, scope="auc")
         )
-        self.running_vars_initializer = tf.variables_initializer(
-            var_list=running_vars
-        )
+        self.running_vars_initializer = tf.variables_initializer(var_list=running_vars)
 
         # Get number of trainable parameters
         self.nb_parameters = 0
@@ -141,8 +142,7 @@ class ClassifierTrainer(BaseTrainer):
         for i, data in enumerate(bg(data_loader)):
             data = [True,] + data
             out = sess.run(
-                self.operators,
-                feed_dict={i: d for i, d in zip(self.inputs, data)},
+                self.operators, feed_dict={i: d for i, d in zip(self.inputs, data)},
             )
             loss.append(out[1])
             if self.nb_classes > 2:
@@ -166,16 +166,10 @@ class ClassifierTrainer(BaseTrainer):
             print(y_true)
             print(y_pred)
             summary["train_acc"] = accuracy_score(y_true, y_pred)
-            summary["train_prec"] = precision_score(
-                y_true, y_pred, average="macro"
-            )
-            summary["train_recall"] = recall_score(
-                y_true, y_pred, average="macro"
-            )
+            summary["train_prec"] = precision_score(y_true, y_pred, average="macro")
+            summary["train_recall"] = recall_score(y_true, y_pred, average="macro")
             summary["train_f1"] = f1_score(y_true, y_pred, average="macro")
-            summary["train_auc"] = roc_auc_score(
-                y_true, y_pred, average="macro"
-            )
+            summary["train_auc"] = roc_auc_score(y_true, y_pred, average="macro")
 
         # Log Epoch results
         self.logger.info("train time: %.3f" % summary["train_time"])
@@ -215,8 +209,7 @@ class ClassifierTrainer(BaseTrainer):
         for i, data in enumerate(bg(data_loader)):
             data = [False,] + data
             out = sess.run(
-                self.operators[1:],
-                feed_dict={i: d for i, d in zip(self.inputs, data)},
+                self.operators[1:], feed_dict={i: d for i, d in zip(self.inputs, data)},
             )
             loss.append(out[0])
             if self.nb_classes > 2:
@@ -240,16 +233,10 @@ class ClassifierTrainer(BaseTrainer):
             y_true = np.concatenate(y_true, axis=0)
             y_pred = np.concatenate(y_pred, axis=0)
             summary[mode + "_acc"] = accuracy_score(y_true, y_pred)
-            summary[mode + "_prec"] = precision_score(
-                y_true, y_pred, average="macro"
-            )
-            summary[mode + "_recall"] = recall_score(
-                y_true, y_pred, average="macro"
-            )
+            summary[mode + "_prec"] = precision_score(y_true, y_pred, average="macro")
+            summary[mode + "_recall"] = recall_score(y_true, y_pred, average="macro")
             summary[mode + "_f1"] = f1_score(y_true, y_pred, average="macro")
-            summary[mode + "_auc"] = roc_auc_score(
-                y_true, y_pred, average="macro"
-            )
+            summary[mode + "_auc"] = roc_auc_score(y_true, y_pred, average="macro")
 
         # Log epoch results
         self.logger.info(mode + " time: %.3f" % summary[mode + "_time"])

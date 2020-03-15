@@ -9,8 +9,13 @@ This script defines a graph convolutional network for tensorflow.
 import tensorflow as tf
 from models import Model
 
-from .graph_conv import (AverageSeqGraphPool, GraphConv, GraphKernels,
-                         MultiHeadAttention, VCAInput)
+from .graph_conv import (
+    AverageSeqGraphPool,
+    GraphConv,
+    GraphKernels,
+    MultiHeadAttention,
+    VCAInput,
+)
 
 
 class GCNN(Model):
@@ -49,14 +54,7 @@ class GCNN(Model):
 
         # Graph Convolutions
         for i, _ in enumerate(
-            list(
-                zip(
-                    kernels_per_layer,
-                    conv_layers,
-                    conv_dropouts,
-                    pooling_layers,
-                )
-            )
+            list(zip(kernels_per_layer, conv_layers, conv_dropouts, pooling_layers,))
         ):
 
             # Graph Kernels for Euchlidean Distances
@@ -85,10 +83,7 @@ class GCNN(Model):
             # Sequence Graph Pooling
             if int(_[3]) > 1:
                 V, C, A = AverageSeqGraphPool(
-                    V,
-                    C,
-                    int(_[3]),
-                    namespace="averseqgraphpool_" + str(i) + "_",
+                    V, C, int(_[3]), namespace="averseqgraphpool_" + str(i) + "_",
                 )
                 M = tf.layers.max_pooling2d(
                     tf.expand_dims(M, axis=-1), int(_[3]), int(_[3])
