@@ -1,42 +1,55 @@
-"""
-protein_graph.py
-
-"""
+"""Split of data and structure to hold the graph dataset."""
 import os
 import numpy as np
-import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
 class ProtienGraphDataset:
+    """Build protein graph dataset, reading IO at index time."""
+
     def __init__(
-        self, data, nb_nodes, task_type, nb_classes, augment=1, fuzzy_radius=0.2
+        self, data, nb_nodes=185, task_type="classification", nb_classes=2
     ):
-        """
+        """Initialize object.
+
+        Default values correspond to the KrasHras experiment
+
+        Parameters
+        ----------
+        data: np.array of arrays
+            each array is an instance: [0] is a path to and [1] is the label.
+        nb_nodes: int
+            max size of graph (input will be padded to that size). Default: 185
+        task_type: str
+            "classification" or "regression". Default: "classification"
+        nb_classes: 2
+            number of classes
+
         """
         self.data = data
         self.nb_nodes = nb_nodes
         self.nb_classes = nb_classes
         self.task_type = task_type
-        self.augment = augment
-        self.fuzzy_radius = fuzzy_radius
-        if self.augment > 1:
-            augment_flags = np.concatenate(
-                [
-                    np.zeros((len(self.data), 1)),
-                    np.ones((len(self.data) * (self.augment - 1), 1)),
-                ],
-                axis=0,
-            )
-            self.data = np.concatenate(
-                [self.data.copy() for i in range(self.augment)], axis=0
-            )
-            self.data = np.concatenate([self.data, augment_flags], axis=-1)
 
         self.ident = np.eye(nb_nodes)
 
     def __getitem__(self, index):
-        """
+        """Return index operator.
+
+        Return
+        ------
+        data: list of np.arrays
+            v: np.array of 3 np.arrays
+                one-hot encoding of aminoacid (length 23),
+                sidechain info (residue_depth and residue_orientation)
+                sinuisoidal tranformation about position
+            c: np.array
+                centered coordinates of aminoacid (x,y,z)
+            m: np.array (matrix)
+                mask
+            y: list
+                one-hot encoding of label ("classification") or [label]
+
         """
         # Parse Protein Graph
         data_ = []
@@ -51,11 +64,11 @@ class ProtienGraphDataset:
         s = []
         c = []
         m = []
-        for i, _ in enumerate(data_):
+        for i, line in enumerate(data_):
             if i >= self.nb_nodes:
                 break
-            row = _[:-1].split()
-            res = [0 for _ in range(23)]
+            row = line[:-1].split()
+            res = np.zeros(23)
             res[int(row[2])] = 1
             v.append(res)
             v_.append(row[3:5])
@@ -73,19 +86,6 @@ class ProtienGraphDataset:
         # s = np.array(list(range(len(v))), dtype=int)
         p = self.sequence_encode(s, 4)
         v = np.concatenate([v, v_, p], axis=-1)
-
-        # Augment with guasian kernel
-        if self.data.shape[-1] == 3 and self.data[index][2]:
-            random_shift = np.concatenate(
-                [
-                    np.expand_dims(
-                        np.random.normal(0.0, self.fuzzy_radius, c.shape[0]), axis=-1
-                    )
-                    for _ in range(c.shape[-1])
-                ],
-                axis=-1,
-            )
-            c = c + random_shift
 
         # Zero Padding
         if v.shape[0] < self.nb_nodes:
@@ -108,9 +108,7 @@ class ProtienGraphDataset:
             y = [0 for _ in range(self.nb_classes)]
             y[int(self.data[index][1])] = 1
         elif self.task_type == "regression":
-            y = [
-                float(self.data[index][1]),
-            ]
+            y = [float(self.data[index][1])]
         else:
             raise Exception("Task Type %s unknown" % self.task_type)
 
@@ -119,26 +117,34 @@ class ProtienGraphDataset:
         return data_
 
     def __len__(self):
-        """
-        """
+        """Retrieve length of data."""
         return len(self.data)
 
     def sequence_encode(self, seq, nb_dims):
-        """
-        Method returns feature vector of shape (seq_len, nb_dims) which encodes
-        positional information of each index in a sequence using sinisodal functions.
+        """Transform position index.
 
-        Params:
-            seq_len - int32; Length of sequence
-            nb_dims - int32; Number of dimensions used to encode position
+        Feature vector of shape (seq_len, nb_dims) which encodes positional
+        information of each index in a sequence using sinisodal functions.
 
-        Returns:
-            sequence_enc - np.array(seq_len, nb_dims); Sequential encoding
+        Paramseters
+        -----------
+            seq_len: int32
+                Length of sequence
+            nb_dims:int32
+                Number of dimensions used to encode position
+
+        Returns
+        -------
+            sequence_enc: np.array(seq_len, nb_dims)
+                Sequential encoding
 
         """
         sequence_enc = np.array(
             [
-                [pos / np.power(10000, 2 * (j // 2) / nb_dims) for j in range(nb_dims)]
+                [
+                    pos / np.power(10000, 2 * (j // 2) / nb_dims)
+                    for j in range(nb_dims)
+                ]
                 if pos != 0
                 else np.zeros(nb_dims)
                 for pos in seq
@@ -155,20 +161,40 @@ def get_datasets(
     nb_nodes,
     task_type,
     nb_classes,
-    split=[0.7, 0.1, 0.2],
+    split=None,
     k_fold=None,
-    augment=1,
-    fuzzy_radius=0.2,
     seed=1234,
 ):
+    """Generate train/test/validation splits for proein graph data.
+
+    Parameters
+    ----------
+    data_path: str
+        path to data directory (generated by ./generate.py)
+    nb_nodes:
+        maximum length of aminoacids in protein
+    task_type: str
+        "classification" or "regression"
+    nb_classes: 2
+        number of classes
+    split: list
+        portion of train/test/validation. Default: [0.7, 0.1, 0.2]
+    k_fold: None
+    seed: int
+
+    Returns
+    -------
+    (train_dataset, valid_dataset, test_dataset): ProtienGraphDataset
+
     """
-    """
+    if split is None:
+        split = [0.7, 0.1, 0.2]
     # Load examples
     X = []
     Y = []
     with open(data_path + "/data.csv", "r") as f:
-        for i, _ in enumerate(f):
-            row = _[:-1].split(",")
+        for line in f:
+            row = line[:-1].split(",")
             pdb_id = row[0].lower()
             chain_id = row[1].lower()
             filename = pdb_id + "_" + chain_id + ".txt"
@@ -223,9 +249,13 @@ def get_datasets(
 
     # Initialize Dataset Iterators
     train_dataset = ProtienGraphDataset(
-        data_train, nb_nodes, task_type, nb_classes, augment, fuzzy_radius
+        data_train, nb_nodes, task_type, nb_classes,
     )
-    valid_dataset = ProtienGraphDataset(data_valid, nb_nodes, task_type, nb_classes)
-    test_dataset = ProtienGraphDataset(data_test, nb_nodes, task_type, nb_classes)
+    valid_dataset = ProtienGraphDataset(
+        data_valid, nb_nodes, task_type, nb_classes
+    )
+    test_dataset = ProtienGraphDataset(
+        data_test, nb_nodes, task_type, nb_classes
+    )
 
     return train_dataset, valid_dataset, test_dataset
