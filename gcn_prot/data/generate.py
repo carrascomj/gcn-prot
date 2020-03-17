@@ -152,9 +152,7 @@ def parse_pdb(path, chain, all_chains=False, first=False):
                     except:
                         ress = residues.index("UNK")
                     if len(sidechain_data) > 0:
-                        sidechain_data = np.array(sidechain_data).astype(
-                            "float"
-                        )
+                        sidechain_data = np.array(sidechain_data).astype("float")
                         sidechain_c = np.mean(sidechain_data, axis=0).tolist()
                         sidechain_data = []
                     else:
@@ -173,9 +171,7 @@ def parse_pdb(path, chain, all_chains=False, first=False):
                     except:
                         ress = residues.index("UNK")
                     if len(sidechain_data) > 0:
-                        sidechain_data = np.array(sidechain_data).astype(
-                            "float"
-                        )
+                        sidechain_data = np.array(sidechain_data).astype("float")
                         sidechain_c = np.mean(sidechain_data, axis=0).tolist()
                         sidechain_data = []
                     else:
@@ -254,9 +250,7 @@ def parse_pdb(path, chain, all_chains=False, first=False):
         chain_c = chain_data[:, 2:5].astype("float")
         chain_sc_c = chain_data[:, 5:].astype("float")
         chain_centroid = np.mean(chain_c, axis=0)
-        residue_depth = np.array(
-            [euclidean(chain_centroid, c) for c in chain_c]
-        )
+        residue_depth = np.array([euclidean(chain_centroid, c) for c in chain_c])
         residue_depth_percentile = [
             1 - perc(residue_depth, d) / 100.0 for d in residue_depth
         ]
@@ -275,10 +269,7 @@ def parse_pdb(path, chain, all_chains=False, first=False):
         offset = -1
         for j in range(len(chain_data) - 3):
             for i, _ in enumerate(data[ii][:-3]):
-                if (
-                    data[ii][i : i + 3, 2].tolist()
-                    == chain_data[j : j + 3, 1].tolist()
-                ):
+                if data[ii][i : i + 3, 2].tolist() == chain_data[j : j + 3, 1].tolist():
                     offset = int(data[ii][i, 1]) - int(chain_data[j, 0])
                     break
             if offset != -1:
@@ -413,6 +404,4 @@ if __name__ == "__main__":
         df = pd.DataFrame(stats)
         df.columns = ["nb_residues", "diameters"]
         summary = df.describe(percentiles=[0.1 * i for i in range(10)])
-        summary.to_csv(
-            data_folder + "/graph.summary", float_format="%1.6f", sep=","
-        )
+        summary.to_csv(data_folder + "/graph.summary", float_format="%1.6f", sep=",")
