@@ -7,5 +7,4 @@ isort
 pytest
 pytest-cov
 torch
-torchvision
 wget

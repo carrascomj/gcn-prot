@@ -10,7 +10,6 @@ setup(
         "sklearn",
         "scipy",
         "torch",
-        "torchvision",
         "wget",
     ],
     version="0.1.0",
