@@ -19,9 +19,11 @@ class GraphConvolution(nn.Module):
         self.out_features = out_features
         self.dropout = dropout
         self.linear = nn.Linear(in_features, out_features, bias)
+        self.act = act
 
-    def forward(self, v, adj):
+    def forward(self, input):
         """Pass forward features `v` and adjacency matrix `adj`."""
+        v, adj = input
         support = self.linear.forward(v)
         support = F.dropout(support, self.dropout, training=self.training)
         output = torch.spmm(adj, support)
@@ -30,5 +32,6 @@ class GraphConvolution(nn.Module):
     def __repr__(self):
         """Stringify as typical torch layer."""
         return (
-            f"{self.__class__.__name__} " f"({self.in_features} -> {self.out_features})"
+            f"{self.__class__.__name__} "
+            f"({self.in_features} -> {self.out_features})"
         )
