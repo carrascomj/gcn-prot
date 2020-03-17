@@ -8,9 +8,7 @@ from .layers import GraphConvolution
 class GCN_simple(nn.Module):
     """Simplest GCN model."""
 
-    def __init__(
-        self, input, hidden, label, dropout=0.1, bias=False, act=F.relu
-    ):
+    def __init__(self, input, hidden, label, dropout=0.1, bias=False, act=F.relu):
         """Initialize GCN model.
 
         Parameters
