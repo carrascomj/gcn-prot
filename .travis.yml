@@ -10,8 +10,8 @@ install:
  - pip install -e .
 
 script:
- - black --check gcn_prot/data gcn_prot/models tests
- - isort -rc --diff --check-only gcn_prot/data tests/
+ - black --check gcn_prot/data gcn_prot/ tests
+ - isort -rc --diff --check-only gcn_prot/ tests/
  - py.test --cov=./
 
 after_success:

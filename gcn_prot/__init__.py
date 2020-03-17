@@ -1,4 +1,4 @@
 """Import at module level."""
-from . import data
+from . import data, models
 
-__all__ = ["data"]
+__all__ = ["data", "models"]
