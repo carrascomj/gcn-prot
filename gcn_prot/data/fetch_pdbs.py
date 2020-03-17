@@ -13,9 +13,8 @@ import argparse
 import os
 
 import numpy as np
-from mpi4py import MPI
-
 import wget
+from mpi4py import MPI
 
 ###############################################################################
 
