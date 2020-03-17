@@ -15,9 +15,10 @@ import os
 
 import numpy as np
 import pandas as pd
-from mpi4py import MPI
 from scipy.spatial.distance import cosine, euclidean
 from scipy.stats import percentileofscore as perc
+
+from mpi4py import MPI
 
 ################################################################################
 
