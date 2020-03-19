@@ -38,6 +38,5 @@ class GraphConvolution(nn.Module):
     def __repr__(self):
         """Stringify as typical torch layer."""
         return (
-            f"{self.__class__.__name__} "
-            f"({self.in_features} -> {self.out_features})"
+            f"{self.__class__.__name__} " f"({self.in_features} -> {self.out_features})"
         )
