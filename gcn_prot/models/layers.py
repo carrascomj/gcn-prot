@@ -7,7 +7,7 @@ import torch.nn.functional as F
 class GraphConvolution(nn.Module):
     """Simple GCN layer.
 
-    Adapted from https://github.com/HazyResearch/hgcn/
+    Adaped from https://github.com/CrivelliLab/Protein-Structure-DL/
     """
 
     def __init__(
@@ -22,15 +22,22 @@ class GraphConvolution(nn.Module):
         self.act = act
 
     def forward(self, input):
-        """Pass forward features `v` and adjacency matrix `adj`."""
+        """Pass forward features `v` and sparse adjacency matrix `adj`."""
         v, adj = input
-        support = self.linear.forward(v)
-        support = F.dropout(support, self.dropout, training=self.training)
-        output = torch.spmm(adj, support)
-        return self.act(output), adj
+        v_shape = v.shape
+        if len(v_shape) > 2:
+            # stacked matrices (tensor) to concatenated matrices
+            v = torch.cat([matrix for matrix in v])
+        # apply each adj_i to each aminoacid_i
+        support = torch.spmm(adj, v)
+        # return to tensor
+        support = support.reshape(v_shape)
+        output = self.act(self.linear(support))
+        return F.dropout(output, training=self.training), adj
 
     def __repr__(self):
         """Stringify as typical torch layer."""
         return (
-            f"{self.__class__.__name__} " f"({self.in_features} -> {self.out_features})"
+            f"{self.__class__.__name__} "
+            f"({self.in_features} -> {self.out_features})"
         )
