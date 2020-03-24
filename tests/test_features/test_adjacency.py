@@ -12,5 +12,5 @@ def test_euclidean():
     return (res == torch.FloatTensor([[0, 1, 2], [1, 0, 1], [2, 1, 0]])).all()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_euclidean()
