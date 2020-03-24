@@ -5,6 +5,7 @@ from glob import glob
 import numpy as np
 from sklearn.model_selection import train_test_split
 
+
 class ProtienGraphDataset:
     """Build protein graph dataset, reading IO at index time."""
 
