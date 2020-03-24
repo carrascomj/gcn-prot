@@ -5,7 +5,6 @@ from glob import glob
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-
 class ProtienGraphDataset:
     """Build protein graph dataset, reading IO at index time."""
 
@@ -31,7 +30,7 @@ class ProtienGraphDataset:
         self.nb_classes = nb_classes
         self.task_type = task_type
 
-        self.ident = np.eye(nb_nodes)
+        self.ident = np.exp(nb_nodes)
 
     def __getitem__(self, index):
         """Return index operator.
