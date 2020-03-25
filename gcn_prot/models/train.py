@@ -36,7 +36,8 @@ def run_epoch(model, iterator, optimizer, criterion, cuda=False, debug=False):
         if not i % 10 and debug:
             sys.stdout.write(f"\rIteration {i}        ")
             sys.stdout.flush()
-        predictions, labels = forward_step(batch, model, criterion, cuda)
+        predictions, labels = forward_step(batch, model, cuda)
+
         loss = criterion(predictions, labels)
         optimizer.zero_grad()
         loss.backward()
@@ -108,7 +109,7 @@ def fit_network(
             best_test_loss = va_test
             torch.save(model.state_dict(), save)
 
-        if epoch % plot_every == 0 and epoch == 0:
+        if epoch % plot_every == 0 and epoch != 0:
             plot_epoch(all_epochs, all_train, all_test, epoch)
 
     return model

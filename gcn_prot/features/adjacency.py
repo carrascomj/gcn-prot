@@ -37,4 +37,6 @@ def transform_input(input):
     v, c, m, y = input
     adj = [euclidean_dist(c[prot]) * m[prot] for prot in range(c.shape[0])]
     v = t.nn.Parameter(v.float(), requires_grad=True)
+    y = t.stack(y).T
+    y = t.LongTensor([t.where(label == 1)[0][0] for label in y])
     return [v, t.stack(adj).float()], y

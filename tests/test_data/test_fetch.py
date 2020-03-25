@@ -1,6 +1,5 @@
 """Test fetch from PDB."""
 import os
-
 from os.path import join
 
 from gcn_prot.data import fetch_PDB
