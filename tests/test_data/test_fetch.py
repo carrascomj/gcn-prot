@@ -1,4 +1,5 @@
 """Test fetch from PDB."""
+import os
 
 from os.path import join
 
@@ -22,3 +23,4 @@ def test_fetch(pdb_path):
 
     assert atoms_test > 0
     assert atoms_test == atoms_valid
+    os.remove("1aa9.pdb")
