@@ -4,8 +4,9 @@ setup(
     name="gcn_prot",
     packages=find_packages(),
     install_requires=[
-        "numpy",
+        "matplotlib",
         "mpi4py",
+        "numpy",
         "pandas",
         "sklearn",
         "scipy",
