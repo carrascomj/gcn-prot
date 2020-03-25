@@ -3,10 +3,12 @@ import os
 from glob import glob
 
 import numpy as np
+
 from sklearn.model_selection import train_test_split
+from torch.utils.data import Dataset
 
 
-class ProtienGraphDataset:
+class ProtienGraphDataset(Dataset):
     """Build protein graph dataset, reading IO at index time."""
 
     def __init__(self, data, nb_nodes=185, task_type="classification", nb_classes=2):

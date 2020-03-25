@@ -1,4 +1,4 @@
 """Features extraction from cleaned data."""
-from .adjacency import euclidean_dist
+from .adjacency import euclidean_dist, transform_input
 
-__all__ = ["euclidean_dist"]
+__all__ = ["euclidean_dist", "transform_input"]

@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
-"""
+"""Adjancency matrix operations.
+
 Created on Fri Mar 20 13:34:38 2020
 
 @author: Bjorn
+
 """
 
 import torch as t
@@ -29,3 +30,11 @@ def euclidean_dist(c, namespace="euclidean_dist_a"):
             adj_mat[i, j] = dist
 
         return adj_mat
+
+
+def transform_input(input):
+    """Get adjancecy matrix from the inputs and apply mask."""
+    v, c, m, y = input
+    adj = [euclidean_dist(c[prot]) * m[prot] for prot in range(c.shape[0])]
+    v = t.nn.Parameter(v.float(), requires_grad=True)
+    return [v, t.stack(adj)], y
