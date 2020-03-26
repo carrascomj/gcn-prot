@@ -47,7 +47,7 @@ class GCN_simple(nn.Module):
             for in_dim, out_dim in zip([feats] + hidden[:-1], hidden)
         ]
         self.hidden_layers = nn.Sequential(*gc_layers)
-        self.out_layer = nn.Sequential(nn.Linear(nb_nodes, label))
+        self.out_layer = nn.Linear(nb_nodes, label)
         self.in_cuda = cuda
 
     def forward(self, input):
@@ -66,7 +66,8 @@ class GCN_simple(nn.Module):
         input = [v, sparsize(adj, self.in_cuda)]
         x, _ = self.hidden_layers.forward(input)
         x = x.sum(axis=-1)
-        return self.out_layer(x)
+        x = self.out_layer(x)
+        return x
 
 
 def sparsize(adj, cuda=False):

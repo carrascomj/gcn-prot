@@ -33,7 +33,8 @@ class GraphConvolution(nn.Module):
         # return to tensor
         support = support.reshape(v_shape)
         output = self.act(self.linear(support))
-        return F.dropout(output, training=self.training), adj
+        output = F.dropout(output, training=self.training)
+        return output, adj
 
     def __repr__(self):
         """Stringify as typical torch layer."""

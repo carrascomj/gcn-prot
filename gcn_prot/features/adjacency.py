@@ -21,7 +21,7 @@ def euclidean_dist(c, namespace="euclidean_dist_a"):
     a - Rank 3 tensor defining pairwise adjacency matrix of nodes.
 
     """
-    adj_mat = t.FloatTensor(len(c), len(c))
+    adj_mat = t.zeros(len(c), len(c)).float()
     for i in range(0, len(c)):
         node1 = c[i]
         for j in range(0, len(c)):
