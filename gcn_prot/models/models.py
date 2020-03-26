@@ -10,7 +10,15 @@ class GCN_simple(nn.Module):
     """Simplest GCN model."""
 
     def __init__(
-        self, feats, hidden, label, nb_nodes, dropout, bias=False, act=F.relu,
+        self,
+        feats,
+        hidden,
+        label,
+        nb_nodes,
+        dropout,
+        bias=False,
+        act=F.relu,
+        cuda=False,
     ):
         """Initialize GCN model.
 
@@ -28,6 +36,8 @@ class GCN_simple(nn.Module):
         bias: bool (False)
         act: function
             activation function. Default: F.relu
+        cuda: bool
+            important to correctly sparsize
 
         """
         super(GCN_simple, self).__init__()
@@ -38,6 +48,7 @@ class GCN_simple(nn.Module):
         ]
         self.hidden_layers = nn.Sequential(*gc_layers)
         self.out_layer = nn.Sequential(nn.Linear(nb_nodes, label))
+        self.in_cuda = cuda
 
     def forward(self, input):
         """Pass forward GCN model.
@@ -52,13 +63,13 @@ class GCN_simple(nn.Module):
 
         """
         v, adj = input
-        input = [v, sparsize(adj)]
+        input = [v, sparsize(adj, self.in_cuda)]
         x, _ = self.hidden_layers.forward(input)
         x = x.sum(axis=-1)
         return self.out_layer(x)
 
 
-def sparsize(adj):
+def sparsize(adj, cuda=False):
     """Transform R^BxNxN `adj` tensor to sparse matrix.
 
     N is the number of nodes, B is the batch size.
@@ -67,6 +78,8 @@ def sparsize(adj):
     ----------
     adj: torch.Tensor (BxNxN)
         B stacked square matrices (NxN)
+    cuda: bool
+        if working with gpu. Default: False
 
     Returns
     -------
@@ -77,12 +90,30 @@ def sparsize(adj):
     if len(adj.shape) < 3:
         return adj
     batch = adj.shape[0]
-    return torch.cat(
-        [
-            torch.cat(
-                [torch.zeros(adj[i].shape) if j != i else adj[i] for j in range(batch)],
-                axis=1,
-            )
-            for i in range(batch)
-        ]
-    ).to_sparse()
+    if cuda:
+        out = torch.cat(
+            [
+                torch.cat(
+                    [
+                        torch.zeros(adj[i].shape).cuda() if j != i else adj[i]
+                        for j in range(batch)
+                    ],
+                    axis=1,
+                ).cuda()
+                for i in range(batch)
+            ]
+        ).to_sparse()
+    else:
+        out = torch.cat(
+            [
+                torch.cat(
+                    [
+                        torch.zeros(adj[i].shape) if j != i else adj[i]
+                        for j in range(batch)
+                    ],
+                    axis=1,
+                )
+                for i in range(batch)
+            ]
+        ).to_sparse()
+    return out

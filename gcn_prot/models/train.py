@@ -9,7 +9,7 @@ from gcn_prot.features import transform_input
 from gcn_prot.visualization import plot_epoch
 
 
-def forward_step(batch, model, training, cuda=False):
+def forward_step(batch, model, training):
     """Pass forward.
 
     Paramters
@@ -23,7 +23,7 @@ def forward_step(batch, model, training, cuda=False):
 
     """
     inputs, labels_onehot = transform_input(batch, training)
-    if cuda:
+    if model.in_cuda:
         v, adj = inputs
         inputs = v.cuda(), adj.cuda()
         labels_onehot = labels_onehot.cuda()
@@ -33,7 +33,7 @@ def forward_step(batch, model, training, cuda=False):
 
 
 def run_epoch(
-    model, iterator, optimizer, criterion, cuda=False, debug=False, training=True,
+    model, iterator, optimizer, criterion, debug=False, training=True,
 ):
     """Train an epoch."""
     epoch_loss = 0
@@ -41,7 +41,7 @@ def run_epoch(
         if debug:
             sys.stdout.write(f"\rIteration {i}        ")
             sys.stdout.flush()
-        predictions, labels = forward_step(batch, model, training, cuda)
+        predictions, labels = forward_step(batch, model, training)
 
         loss = criterion(predictions, labels)
         optimizer.zero_grad()
@@ -60,7 +60,6 @@ def fit_network(
     batch_size,
     epochs=100,
     plot_every=1,
-    cuda=False,
     debug=False,
     save=False,
 ):
@@ -102,10 +101,10 @@ def fit_network(
     best_test_loss = float("inf")
     for epoch in range(epochs):
         model.train()
-        tr_loss = run_epoch(model, trainloader, optimizer, criterion, cuda, debug)
+        tr_loss = run_epoch(model, trainloader, optimizer, criterion, debug)
         model.eval()
         va_test = run_epoch(
-            model, testloader, optimizer, criterion, cuda, debug, training=False,
+            model, testloader, optimizer, criterion, debug, training=False,
         )
 
         all_train.append(tr_loss)
