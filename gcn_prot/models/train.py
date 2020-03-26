@@ -24,7 +24,8 @@ def forward_step(batch, model, training, cuda=False):
     """
     inputs, labels_onehot = transform_input(batch, training)
     if cuda:
-        inputs = inputs.cuda()
+        v, adj = inputs
+        inputs = v.cuda(), adj.cuda()
         labels_onehot = labels_onehot.cuda()
     predictions = model(inputs)
 
