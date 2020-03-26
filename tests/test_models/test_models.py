@@ -7,7 +7,7 @@ from gcn_prot.models import GCN_simple, sparsize
 
 def test_simple_init():
     """Test that layers are properly built."""
-    nnet = GCN_simple(100, [20, 20, 20, 20], 2)
+    nnet = GCN_simple(10, [20, 20, 20, 20], 2, 100, dropout=0)
     assert len(nnet.hidden_layers) == 4
 
 
@@ -22,8 +22,8 @@ def test_sparse(adj_batch):
 
 def test_simple_forward_online():
     """Test forward pass with one instance."""
-    nnet = GCN_simple(3, [20, 20, 20, 20], 2)
-    # 3 aminoacids with 3 features
+    nnet = GCN_simple(3, [20, 20, 20, 20], 2, 3, dropout=0)
+    # 3 aminoacids with 3 featuresz
     v = torch.FloatTensor([[23.0, 0.0, 2.0], [4.0, 2.0, 0.0], [0.0, 2.0, 0.0]])
     adj = torch.FloatTensor([[0, 1, 2], [1, 2, 0], [2, 1, 0]]).to_sparse()
     out = nnet.forward([v, adj])
@@ -33,7 +33,7 @@ def test_simple_forward_online():
 
 def test_simple_forward_batch(adj_batch):
     """Test forward pass with different stacking method."""
-    nnet = GCN_simple(3, [20, 20, 20, 20], 2)
+    nnet = GCN_simple(3, [20, 20, 20, 20], 2, 2, dropout=0)
     # 2 proteins with 2 aminoacids and 3 features each
     v = torch.FloatTensor(
         [[[23.0, 0.0, 2.0], [4.0, 2.0, 0.0]], [[1.0, 1.0, 24.0], [2.0, 1.0, 0.0]],]

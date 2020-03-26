@@ -7,7 +7,7 @@ from gcn_prot.models import fit_network, forward_step
 
 def test_forward_step(batch, nn_kras):
     """Test the forward pass."""
-    forward_step(batch, nn_kras)
+    forward_step(batch, nn_kras, False)
 
 
 def test_fit_epoch(data_path, nn_kras):

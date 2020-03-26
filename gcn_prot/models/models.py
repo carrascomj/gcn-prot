@@ -9,18 +9,22 @@ from .layers import GraphConvolution
 class GCN_simple(nn.Module):
     """Simplest GCN model."""
 
-    def __init__(self, input, hidden, label, dropout=0.1, bias=False, act=F.relu):
+    def __init__(
+        self, feats, hidden, label, nb_nodes, dropout, bias=False, act=F.relu,
+    ):
         """Initialize GCN model.
 
         Parameters
         ----------
-        input: int
+        feats: int
             dimension of inputs
         hidden: Iterable[int]
             a vector of dimensions of the hidden graph convolutional layers
         label: int
             dimension of output
-        dropout: float (0.1)
+        nb_nodes: int
+            number of aminoacids. Used for last layer.
+        dropout: float
         bias: bool (False)
         act: function
             activation function. Default: F.relu
@@ -30,10 +34,10 @@ class GCN_simple(nn.Module):
         hidden = [hidden] if isinstance("hidden", int) else hidden
         gc_layers = [
             GraphConvolution(in_dim, out_dim, dropout, bias, act)
-            for in_dim, out_dim in zip([input] + hidden[:-1], hidden)
+            for in_dim, out_dim in zip([feats] + hidden[:-1], hidden)
         ]
         self.hidden_layers = nn.Sequential(*gc_layers)
-        self.out_layer = nn.Sequential(nn.Linear(hidden[-1], label))
+        self.out_layer = nn.Sequential(nn.Linear(nb_nodes, label))
 
     def forward(self, input):
         """Pass forward GCN model.
@@ -50,7 +54,7 @@ class GCN_simple(nn.Module):
         v, adj = input
         input = [v, sparsize(adj)]
         x, _ = self.hidden_layers.forward(input)
-        x = x.sum(axis=-2)
+        x = x.sum(axis=-1)
         return self.out_layer(x)
 
 

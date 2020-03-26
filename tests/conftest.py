@@ -54,4 +54,4 @@ def batch(data_path):
 @pytest.fixture(scope="module")
 def nn_kras():
     """Define simple GCN for the KrasHras dataset."""
-    return GCN_simple(29, [3], 2)
+    return GCN_simple(29, [3], 2, 185, dropout=0)

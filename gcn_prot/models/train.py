@@ -9,7 +9,7 @@ from gcn_prot.features import transform_input
 from gcn_prot.visualization import plot_epoch
 
 
-def forward_step(batch, model, cuda=False):
+def forward_step(batch, model, training, cuda=False):
     """Pass forward.
 
     Paramters
@@ -17,10 +17,12 @@ def forward_step(batch, model, cuda=False):
     batch: tuple(torch.Tensor)
         from DataLoader
     model: torch.nn.Module
+    training: bool
+        is network training
     cuda: bool
 
     """
-    inputs, labels_onehot = transform_input(batch)
+    inputs, labels_onehot = transform_input(batch, training)
     if cuda:
         inputs = inputs.cuda()
         labels_onehot = labels_onehot.cuda()
@@ -29,14 +31,16 @@ def forward_step(batch, model, cuda=False):
     return predictions, labels_onehot
 
 
-def run_epoch(model, iterator, optimizer, criterion, cuda=False, debug=False):
+def run_epoch(
+    model, iterator, optimizer, criterion, cuda=False, debug=False, training=True,
+):
     """Train an epoch."""
     epoch_loss = 0
     for i, batch in enumerate(iterator):
-        if not i % 10 and debug:
+        if debug:
             sys.stdout.write(f"\rIteration {i}        ")
             sys.stdout.flush()
-        predictions, labels = forward_step(batch, model, cuda)
+        predictions, labels = forward_step(batch, model, training, cuda)
 
         loss = criterion(predictions, labels)
         optimizer.zero_grad()
@@ -89,7 +93,7 @@ def fit_network(
         train_dataset, shuffle=True, batch_size=batch_size, drop_last=False
     )
     testloader = DataLoader(
-        test_dataset, shuffle=False, batch_size=batch_size, drop_last=False
+        test_dataset, shuffle=False, batch_size=batch_size, drop_last=False,
     )
     all_train = []
     all_test = []
@@ -99,7 +103,9 @@ def fit_network(
         model.train()
         tr_loss = run_epoch(model, trainloader, optimizer, criterion, cuda, debug)
         model.eval()
-        va_test = run_epoch(model, testloader, optimizer, criterion, cuda, debug)
+        va_test = run_epoch(
+            model, testloader, optimizer, criterion, cuda, debug, training=False,
+        )
 
         all_train.append(tr_loss)
         all_test.append(va_test)
