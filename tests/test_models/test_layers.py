@@ -9,7 +9,7 @@ def test_normalization():
     v = torch.FloatTensor([[23.0, 0.0, 2.0], [4.0, 2.0, 0.0], [0.0, 2.0, 0.0]])
     adj = torch.FloatTensor([[0, 1, 2], [1, 2, 0], [2, 1, 0]]).to_sparse()
     norm_layer = NormalizationLayer(3, 2)
-    out = norm_layer([v, adj])
+    _, out = norm_layer([v, adj])
     assert (out <= 1).all() and (out >= 0).all()
 
 
@@ -19,5 +19,5 @@ def test_normalization_batch(adj_batch):
         [[[23.0, 0.0, 2.0], [4.0, 2.0, 0.0]], [[1.0, 1.0, 24.0], [2.0, 1.0, 0.0]],]
     )
     norm_layer = NormalizationLayer(3, 2)
-    out = norm_layer([v, adj_batch])
+    _, out = norm_layer([v, adj_batch])
     assert (out <= 1).all() and (out >= 0).all()
