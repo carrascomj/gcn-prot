@@ -63,10 +63,10 @@ class NormalizationLayer(nn.Module):
     def forward(self, input):
         """Normalize sparse adjacency matrix `adj` in terms of `v`."""
         v, adj = input
-        v_shape = v.shape
-        if len(v_shape) > 2:
-            c1 = self.weight1(v)
-            c2 = self.weight2(v)
-            c = (F.sigmoid(c1 + c2) * self.d) + 0.00001  # As to not divide by zero
-            norm_adj = torch.exp(-((adj * adj) / (2 * c * c)))
-            return norm_adj
+        #v_shape = v.shape
+        #if len(v_shape) > 2:
+        c1 = self.weight1(v)
+        c2 = self.weight2(v)
+        c = (F.sigmoid(c1 + c2) * self.d) + 0.00001  # As to not divide by zero
+        norm_adj = torch.exp(-((adj * adj) / (2 * c * c)))
+        return norm_adj

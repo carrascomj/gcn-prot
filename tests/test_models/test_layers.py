@@ -1,6 +1,7 @@
 """Test layers of the GCN model where testing the model is not enough."""
 import torch
-
+import sys
+sys.path.append("C:/Users/Bjorn/OneDrive/Dokument/University/DTU/02460 Advanced Machine Learning/gcn-prot/gcn_prot")
 from gcn_prot.models.layers import NormalizationLayer
 
 
