@@ -41,8 +41,7 @@ class GraphConvolution(nn.Module):
     def __repr__(self):
         """Stringify as typical torch layer."""
         return (
-            f"{self.__class__.__name__} "
-            f"({self.in_features} -> {self.out_features})"
+            f"{self.__class__.__name__} " f"({self.in_features} -> {self.out_features})"
         )
 
 
@@ -81,9 +80,7 @@ class NormalizationLayer(nn.Module):
         c_shape = c2.shape
         if len(c_shape) > 2:
             c = (
-                torch.sigmoid(
-                    c1.bmm(c2.view(c_shape[0], c_shape[2], c_shape[1]))
-                )
+                torch.sigmoid(c1.bmm(c2.view(c_shape[0], c_shape[2], c_shape[1])))
                 * self.d
             ) + 0.00001  # As to not divide by zero
             c = 1 / (2 * c * c)

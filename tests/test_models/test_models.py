@@ -37,10 +37,7 @@ def test_simple_forward_batch(adj_batch):
     nnet = GCN_simple(3, [20, 20, 20, 20], 2, 2, dropout=0)
     # 2 proteins with 2 aminoacids and 3 features each
     v = torch.FloatTensor(
-        [
-            [[23.0, 0.0, 2.0], [4.0, 2.0, 0.0]],
-            [[1.0, 1.0, 24.0], [2.0, 1.0, 0.0]],
-        ]
+        [[[23.0, 0.0, 2.0], [4.0, 2.0, 0.0]], [[1.0, 1.0, 24.0], [2.0, 1.0, 0.0]],]
     )
     out = nnet.forward([v, adj_batch])
     # 2 instances + 2 classes

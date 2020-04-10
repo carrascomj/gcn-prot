@@ -18,10 +18,7 @@ def test_normalization():
 def test_normalization_batch(adj_batch):
     """Test adjancency normalization in batch."""
     v = torch.FloatTensor(
-        [
-            [[23.0, 0.0, 2.0], [4.0, 2.0, 0.0]],
-            [[1.0, 1.0, 24.0], [2.0, 1.0, 0.0]],
-        ]
+        [[[23.0, 0.0, 2.0], [4.0, 2.0, 0.0]], [[1.0, 1.0, 24.0], [2.0, 1.0, 0.0]],]
     )
     adj_batch = sparsize(adj_batch)
     norm_layer = NormalizationLayer(3, 8)
