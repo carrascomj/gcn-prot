@@ -77,11 +77,9 @@ class NormalizationLayer(nn.Module):
         adj = adj.to_dense()
         c1 = self.weight1(v)
         c2 = self.weight2(v)
-        c_shape = c2.shape
-        if len(c_shape) > 2:
+        if len(c2.shape) > 2:
             c = (
-                torch.sigmoid(c1.bmm(c2.view(c_shape[0], c_shape[2], c_shape[1])))
-                * self.d
+                torch.sigmoid(c1.bmm(c2.permute(0, 2, 1))) * self.d
             ) + 0.00001  # As to not divide by zero
             c = 1 / (2 * c * c)
             c = sparsize(c, self.in_cuda).to_dense()
