@@ -39,7 +39,8 @@ class GraphConvolution(nn.Module):
     def __repr__(self):
         """Stringify as typical torch layer."""
         return (
-            f"{self.__class__.__name__} " f"({self.in_features} -> {self.out_features})"
+            f"{self.__class__.__name__} "
+            f"({self.in_features} -> {self.out_features})"
         )
 
 
@@ -50,7 +51,13 @@ class NormalizationLayer(nn.Module):
     """
 
     def __init__(
-        self, in_features, out_features, dropout=0.1, bias=False, act=F.relu, D=100.0
+        self,
+        in_features,
+        out_features,
+        dropout=0.1,
+        bias=False,
+        act=F.relu,
+        D=100.0,
     ):
         """Initialize layer."""
         super(NormalizationLayer, self).__init__()
@@ -58,17 +65,26 @@ class NormalizationLayer(nn.Module):
         # Define trainable parameters
         self.weight1 = nn.Linear(in_features, self.weight_feat, bias)
         self.weight2 = nn.Linear(in_features, self.weight_feat, bias)
+        self.in_feat = in_features
         self.d = D
 
     def forward(self, input):
         """Normalize sparse adjacency matrix `adj` in terms of `v`."""
         v, adj = input
-        adj = adj.to_dense()
-        #v_shape = v.shape
-        #if len(v_shape) > 2:
         c1 = self.weight1(v)
         c2 = self.weight2(v)
-        c = (torch.sigmoid(c1 + c2.T) * self.d) + 0.00001  # As to not divide by zero
-        
-        norm_adj = torch.exp(-((adj * adj) / (2 * c * c)))
-        return norm_adj
+        c_shape = c2.shape
+        if len(c_shape) > 2:
+            c = (
+                torch.sigmoid(
+                    c1.bmm(c2.view(c_shape[0], c_shape[2], c_shape[1]))
+                )
+                * self.d
+            ) + 0.00001  # As to not divide by zero
+            c = torch.cat([matrix for matrix in c])
+        else:
+            c = (
+                torch.sigmoid(c1.mm(c2.T)) * self.d
+            ) + 0.00001  # As to not divide by zero
+        norm_adj = torch.exp(-(torch.spmm((adj * adj), (1 / (2 * c * c)))))
+        return v, norm_adj

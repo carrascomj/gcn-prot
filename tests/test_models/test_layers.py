@@ -1,8 +1,8 @@
 """Test layers of the GCN model where testing the model is not enough."""
 import torch
-import sys
-sys.path.append("C:/Users/Bjorn/OneDrive/Dokument/University/DTU/02460 Advanced Machine Learning/gcn-prot/gcn_prot")
+
 from gcn_prot.models.layers import NormalizationLayer
+from gcn_prot.models import sparsize
 
 
 def test_normalization():
@@ -17,9 +17,17 @@ def test_normalization():
 def test_normalization_batch(adj_batch):
     """Test adjancency normalization in batch."""
     v = torch.FloatTensor(
-        [[[23.0, 0.0, 2.0], [4.0, 2.0, 0.0]], [[1.0, 1.0, 24.0], [2.0, 1.0, 0.0]],]
+        [
+            [[23.0, 0.0, 2.0], [4.0, 2.0, 0.0]],
+            [[1.0, 1.0, 24.0], [2.0, 1.0, 0.0]],
+        ]
     )
-    adj_batch = adj_batch.to_sparse()
-    norm_layer = NormalizationLayer(3, 2)
+    adj_batch = sparsize(adj_batch)
+    norm_layer = NormalizationLayer(3, 8)
     _, out = norm_layer([v, adj_batch])
+    print(out)
     assert (out <= 1).all() and (out >= 0).all()
+
+
+if __name__ == "__main__":
+    test_normalization()
