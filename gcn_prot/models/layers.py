@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .utils import sparsize
+
 
 class GraphConvolution(nn.Module):
     """Simple GCN layer.
@@ -58,6 +60,7 @@ class NormalizationLayer(nn.Module):
         bias=False,
         act=F.relu,
         D=100.0,
+        cuda=False,
     ):
         """Initialize layer."""
         super(NormalizationLayer, self).__init__()
@@ -67,10 +70,12 @@ class NormalizationLayer(nn.Module):
         self.weight2 = nn.Linear(in_features, self.weight_feat, bias)
         self.in_feat = in_features
         self.d = D
+        self.in_cuda = cuda
 
     def forward(self, input):
         """Normalize sparse adjacency matrix `adj` in terms of `v`."""
         v, adj = input
+        adj = adj.to_dense()
         c1 = self.weight1(v)
         c2 = self.weight2(v)
         c_shape = c2.shape
@@ -81,10 +86,12 @@ class NormalizationLayer(nn.Module):
                 )
                 * self.d
             ) + 0.00001  # As to not divide by zero
-            c = torch.cat([matrix for matrix in c])
+            c = 1 / (2 * c * c)
+            c = sparsize(c, self.in_cuda).to_dense()
         else:
             c = (
                 torch.sigmoid(c1.mm(c2.T)) * self.d
             ) + 0.00001  # As to not divide by zero
-        norm_adj = torch.exp(-(torch.spmm((adj * adj), (1 / (2 * c * c)))))
-        return v, norm_adj
+
+        norm_adj = torch.exp(-((adj * adj) * c))
+        return v, norm_adj.to_sparse()

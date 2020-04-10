@@ -2,7 +2,7 @@
 import torch
 
 from gcn_prot.models.layers import NormalizationLayer
-from gcn_prot.models import sparsize
+from gcn_prot.models.utils import sparsize
 
 
 def test_normalization():
@@ -11,6 +11,7 @@ def test_normalization():
     adj = torch.FloatTensor([[0, 1, 2], [1, 2, 0], [2, 1, 0]]).to_sparse()
     norm_layer = NormalizationLayer(3, 2)
     _, out = norm_layer([v, adj])
+    out = out.to_dense()
     assert (out <= 1).all() and (out >= 0).all()
 
 
@@ -25,9 +26,9 @@ def test_normalization_batch(adj_batch):
     adj_batch = sparsize(adj_batch)
     norm_layer = NormalizationLayer(3, 8)
     _, out = norm_layer([v, adj_batch])
-    print(out)
+    out = out.to_dense()
     assert (out <= 1).all() and (out >= 0).all()
 
 
 if __name__ == "__main__":
-    test_normalization()
+    test_normalization_batch(torch.Tensor([[[1, 3], [3, 1]], [[7, 8], [8, 7]]]))
