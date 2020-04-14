@@ -2,7 +2,7 @@
 
 import torch
 
-from gcn_prot.models import GCN_simple, GCN_normed
+from gcn_prot.models import GCN_normed, GCN_simple
 from gcn_prot.models.utils import sparsize
 
 
@@ -51,6 +51,12 @@ def test_normalized_forward_batch(adj_batch):
     v = torch.FloatTensor(
         [[[23.0, 0.0, 2.0], [4.0, 2.0, 0.0]], [[1.0, 1.0, 24.0], [2.0, 1.0, 0.0]],]
     )
+    criterion = torch.nn.CrossEntropyLoss().cuda()
     out = nnet.forward([v, adj_batch])
+    y = torch.LongTensor(
+        [torch.where(label == 1)[0][0] for label in torch.Tensor([[0, 1], [1, 0]])]
+    )
+    loss = criterion(out, y)
+    loss.backward()
     # 2 instances + 2 classes
     assert out.shape == torch.Size([2, 2])

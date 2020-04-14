@@ -2,7 +2,7 @@
 import torch
 
 
-def sparsize(adj, cuda=False):
+def sparsize(adj, cuda=False, sparsed=True):
     """Transform R^BxNxN `adj` tensor to sparse matrix.
 
     N is the number of nodes, B is the batch size.
@@ -35,7 +35,7 @@ def sparsize(adj, cuda=False):
                 ).cuda()
                 for i in range(batch)
             ]
-        ).to_sparse()
+        )
     else:
         out = torch.cat(
             [
@@ -48,5 +48,7 @@ def sparsize(adj, cuda=False):
                 )
                 for i in range(batch)
             ]
-        ).to_sparse()
+        )
+    if sparsed:
+        out = out.to_sparse()
     return out

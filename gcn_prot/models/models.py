@@ -83,6 +83,7 @@ class GCN_normed(nn.Module):
         dropout,
         bias=False,
         act=F.relu,
+        D=100,
         cuda=False,
     ):
         """Initialize GCN model.
@@ -101,22 +102,24 @@ class GCN_normed(nn.Module):
         bias: bool (False)
         act: function
             activation function. Default: F.relu
+        D: int
+            initial diameter for normalization
         cuda: bool
             important to correctly sparsize
 
         """
         super(GCN_normed, self).__init__()
+        self.in_cuda = cuda
         hidden = [hidden] if isinstance("hidden", int) else hidden
         gc_layers = [
             nn.Sequential(
-                NormalizationLayer(in_dim, hidden_norm),
+                NormalizationLayer(in_dim, hidden_norm, D=D, cuda=cuda),
                 GraphConvolution(in_dim, out_dim, dropout, bias, act),
             )
             for in_dim, out_dim in zip([feats] + hidden[:-1], hidden)
         ]
         self.hidden_layers = nn.Sequential(*gc_layers)
         self.out_layer = nn.Linear(nb_nodes, label)
-        self.in_cuda = cuda
 
     def forward(self, input):
         """Pass forward GCN model.

@@ -63,6 +63,8 @@ class NormalizationLayer(nn.Module):
         self.in_feat = in_features
         self.d = D
         self.in_cuda = cuda
+        if self.in_cuda:
+            self.cuda()
 
     def forward(self, input):
         """Normalize sparse adjacency matrix `adj` in terms of `v`."""
@@ -75,7 +77,7 @@ class NormalizationLayer(nn.Module):
                 torch.sigmoid(c1.bmm(c2.permute(0, 2, 1))) * self.d
             ) + 0.00001  # As to not divide by zero
             c = 1 / (2 * c * c)
-            c = sparsize(c, self.in_cuda).to_dense()
+            c = sparsize(c, self.in_cuda, sparsed=False)
         else:
             c = (
                 torch.sigmoid(c1.mm(c2.T)) * self.d

@@ -1,5 +1,5 @@
 """Expose only the models."""
-from .models import GCN_simple, GCN_normed, sparsize
+from .models import GCN_normed, GCN_simple, sparsize
 from .train import fit_network, forward_step
 
 __all__ = [
