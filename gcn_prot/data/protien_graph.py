@@ -36,7 +36,7 @@ class ProtienGraphDataset(Dataset):
             number of classes
         augment, fuzzy_radius: int, float
             parameters to apply gausian augmentation of coordinate matrix
-        augmented_label: int
+        augmented_label: string
             label to augment. Default: all (None)
 
         """
@@ -46,20 +46,21 @@ class ProtienGraphDataset(Dataset):
         self.task_type = task_type
         self.augment = augment
         self.fuzzy_radius = fuzzy_radius
-        self.augmented_label = (
-            self.augmented_label if augmented_label else list(range(nb_classes - 1))
-        )
 
         if self.augment > 1:
+            to_augment = (
+                data[data[:, 1] == str(augmented_label)] if augmented_label else data
+            )
             augment_flags = np.concatenate(
                 [
                     np.zeros((len(self.data), 1)),
-                    np.ones((len(self.data) * (self.augment - 1), 1)),
+                    np.ones((len(to_augment) * (self.augment - 1), 1)),
                 ],
                 axis=0,
             )
             self.data = np.concatenate(
-                [self.data.copy() for i in range(self.augment)], axis=0
+                [self.data] + [to_augment.copy() for _ in range(self.augment - 1)],
+                axis=0,
             )
             self.data = np.concatenate([self.data, augment_flags], axis=-1)
 
@@ -219,6 +220,7 @@ def get_datasets(
     k_fold=None,
     seed=1234,
     augment=1,
+    augmented_label=None,
 ):
     """Generate train/test/validation splits for proein graph data.
 
@@ -236,6 +238,8 @@ def get_datasets(
         portion of train/test/validation. Default: [0.7, 0.1, 0.2]
     k_fold: None
     seed: int
+    augment:int
+    augmented_label:string
 
     Returns
     -------
@@ -308,13 +312,23 @@ def get_datasets(
 
     # Initialize Dataset Iterators
     train_dataset = ProtienGraphDataset(
-        data_train, nb_nodes, task_type, nb_classes, augment=augment
+        data_train,
+        nb_nodes,
+        task_type,
+        nb_classes,
+        augment=augment,
+        augmented_label=augmented_label,
     )
     valid_dataset = ProtienGraphDataset(
-        data_valid, nb_nodes, task_type, nb_classes, augment=augment
+        data_valid, nb_nodes, task_type, nb_classes, augment=1
     )
     test_dataset = ProtienGraphDataset(
-        data_test, nb_nodes, task_type, nb_classes, augment=augment
+        data_test,
+        nb_nodes,
+        task_type,
+        nb_classes,
+        augment=augment,
+        augmented_label=augmented_label,
     )
 
     return train_dataset, valid_dataset, test_dataset
