@@ -83,7 +83,7 @@ class GCN_normed(nn.Module):
         dropout,
         bias=False,
         act=F.relu,
-        D=100,
+        D=1,
         cuda=False,
     ):
         """Initialize GCN model.
@@ -113,7 +113,7 @@ class GCN_normed(nn.Module):
         hidden = [hidden] if isinstance("hidden", int) else hidden
         gc_layers = [
             nn.Sequential(
-                NormalizationLayer(in_dim, hidden_norm, D=D, cuda=cuda),
+                NormalizationLayer(in_dim, hidden_norm, D=D),
                 GraphConvolution(in_dim, out_dim, dropout, bias, act),
             )
             for in_dim, out_dim in zip([feats] + hidden[:-1], hidden)
