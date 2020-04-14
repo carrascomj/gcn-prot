@@ -134,7 +134,6 @@ class GCN_normed(nn.Module):
 
         """
         v, adj = input
-        input = [v, sparsize(adj, self.in_cuda)]
         x, _ = self.hidden_layers.forward(input)
         x = x.sum(axis=-1)
         x = self.out_layer(x)
