@@ -13,7 +13,7 @@ setup(
         "torch",
         "wget",
     ],
-    version="0.1.0",
+    version="0.2.0",
     description="Graph convolutional networks tperform structural learning of proteins",
     author="Jorge Carrasco and Bjorn Hansen",
     license="MIT",
