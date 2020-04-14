@@ -52,14 +52,7 @@ class NormalizationLayer(nn.Module):
     """
 
     def __init__(
-        self,
-        in_features,
-        out_features,
-        dropout=0.1,
-        bias=False,
-        act=F.relu,
-        D=100.0,
-        cuda=False,
+        self, in_features, out_features, bias=False, act=F.relu, D=100.0, cuda=False,
     ):
         """Initialize layer."""
         super(NormalizationLayer, self).__init__()
@@ -90,3 +83,9 @@ class NormalizationLayer(nn.Module):
 
         norm_adj = torch.exp(-((adj * adj) * c))
         return v, norm_adj.to_sparse()
+
+    def __repr__(self):
+        """Stringify as typical torch layer."""
+        return (
+            f"{self.__class__.__name__} " f"({self.in_features} -> {self.out_features})"
+        )

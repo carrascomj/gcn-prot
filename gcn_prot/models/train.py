@@ -93,7 +93,7 @@ def fit_network(
         train_dataset, shuffle=True, batch_size=batch_size, drop_last=False
     )
     testloader = DataLoader(
-        test_dataset, shuffle=False, batch_size=batch_size, drop_last=False,
+        test_dataset, shuffle=True, batch_size=batch_size, drop_last=False,
     )
     all_train = []
     all_test = []
@@ -101,7 +101,9 @@ def fit_network(
     best_test_loss = float("inf")
     for epoch in range(epochs):
         model.train()
-        tr_loss = run_epoch(model, trainloader, optimizer, criterion, debug)
+        tr_loss = run_epoch(
+            model, trainloader, optimizer, criterion, debug, training=True
+        )
         model.eval()
         va_test = run_epoch(
             model, testloader, optimizer, criterion, debug, training=False,

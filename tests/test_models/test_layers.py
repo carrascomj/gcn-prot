@@ -25,7 +25,3 @@ def test_normalization_batch(adj_batch):
     _, out = norm_layer([v, adj_batch])
     out = out.to_dense()
     assert (out <= 1).all() and (out >= 0).all()
-
-
-if __name__ == "__main__":
-    test_normalization_batch(torch.Tensor([[[1, 3], [3, 1]], [[7, 8], [8, 7]]]))
