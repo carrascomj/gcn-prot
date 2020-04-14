@@ -10,7 +10,16 @@ from torch.utils.data import Dataset
 class ProtienGraphDataset(Dataset):
     """Build protein graph dataset, reading IO at index time."""
 
-    def __init__(self, data, nb_nodes=185, task_type="classification", nb_classes=2):
+    def __init__(
+        self,
+        data,
+        nb_nodes=185,
+        task_type="classification",
+        nb_classes=2,
+        augment=1,
+        fuzzy_radius=0.2,
+        augmented_label=None,
+    ):
         """Initialize object.
 
         Default values correspond to the KrasHras experiment
@@ -25,12 +34,34 @@ class ProtienGraphDataset(Dataset):
             "classification" or "regression". Default: "classification"
         nb_classes: 2
             number of classes
+        augment, fuzzy_radius: int, float
+            parameters to apply gausian augmentation of coordinate matrix
+        augmented_label: int
+            label to augment. Default: all (None)
 
         """
         self.data = data
         self.nb_nodes = nb_nodes
         self.nb_classes = nb_classes
         self.task_type = task_type
+        self.augment = augment
+        self.fuzzy_radius = fuzzy_radius
+        self.augmented_label = (
+            self.augmented_label if augmented_label else list(range(nb_classes - 1))
+        )
+
+        if self.augment > 1:
+            augment_flags = np.concatenate(
+                [
+                    np.zeros((len(self.data), 1)),
+                    np.ones((len(self.data) * (self.augment - 1), 1)),
+                ],
+                axis=0,
+            )
+            self.data = np.concatenate(
+                [self.data.copy() for i in range(self.augment)], axis=0
+            )
+            self.data = np.concatenate([self.data, augment_flags], axis=-1)
 
         self.ident = np.eye(nb_nodes)
 
@@ -87,6 +118,19 @@ class ProtienGraphDataset(Dataset):
         # s = np.array(list(range(len(v))), dtype=int)
         p = self.sequence_encode(s, 4)
         v = np.concatenate([v, v_, p], axis=-1)
+
+        # Augment with gaussian kernel
+        if self.data.shape[-1] == 3 and self.data[index][2]:
+            random_shift = np.concatenate(
+                [
+                    np.expand_dims(
+                        np.random.normal(0.0, self.fuzzy_radius, c.shape[0]), axis=-1,
+                    )
+                    for _ in range(c.shape[-1])
+                ],
+                axis=-1,
+            )
+            c = c + random_shift
 
         # Zero Padding
         if v.shape[0] < self.nb_nodes:
@@ -167,7 +211,14 @@ def get_longest(path):
 
 
 def get_datasets(
-    data_path, task_type, nb_classes, nb_nodes=None, split=None, k_fold=None, seed=1234,
+    data_path,
+    task_type,
+    nb_classes,
+    nb_nodes=None,
+    split=None,
+    k_fold=None,
+    seed=1234,
+    augment=1,
 ):
     """Generate train/test/validation splits for proein graph data.
 
@@ -256,8 +307,14 @@ def get_datasets(
         data_valid = np.concatenate([x_valid, y_valid], axis=-1)
 
     # Initialize Dataset Iterators
-    train_dataset = ProtienGraphDataset(data_train, nb_nodes, task_type, nb_classes,)
-    valid_dataset = ProtienGraphDataset(data_valid, nb_nodes, task_type, nb_classes)
-    test_dataset = ProtienGraphDataset(data_test, nb_nodes, task_type, nb_classes)
+    train_dataset = ProtienGraphDataset(
+        data_train, nb_nodes, task_type, nb_classes, augment=augment
+    )
+    valid_dataset = ProtienGraphDataset(
+        data_valid, nb_nodes, task_type, nb_classes, augment=augment
+    )
+    test_dataset = ProtienGraphDataset(
+        data_test, nb_nodes, task_type, nb_classes, augment=augment
+    )
 
     return train_dataset, valid_dataset, test_dataset
