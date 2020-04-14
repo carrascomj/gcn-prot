@@ -27,6 +27,23 @@ def test_get_dataset(data_path):
     assert 48 == len(valid)
 
 
+def test_gaussian_augmentation(data_path):
+    """Test splitting with default size of datasets."""
+    train, test, valid = get_datasets(
+        data_path=data_path,
+        nb_nodes=185,
+        task_type="classification",
+        nb_classes=2,
+        split=None,
+        augment=2,
+        k_fold=None,
+        seed=1234,
+    )
+    assert 164 * 2 == len(train)
+    assert 24 * 2 == len(test)
+    assert 48 * 2 == len(valid)
+
+
 def test_indexing(data_path):
     """Test random access the generated graph dataset."""
     train, _, _ = get_datasets(
