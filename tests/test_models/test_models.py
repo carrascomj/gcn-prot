@@ -23,7 +23,7 @@ def test_sparse(adj_batch):
 
 def test_simple_forward_online():
     """Test forward pass with one instance."""
-    nnet = GCN_simple(3, [20, 20, 20, 20], 2, 3, dropout=0)
+    nnet = GCN_simple(3, [10, 10], 2, 3, dropout=0)
     # 3 aminoacids with 3 featuresz
     v = torch.FloatTensor([[23.0, 0.0, 2.0], [4.0, 2.0, 0.0], [0.0, 2.0, 0.0]])
     adj = torch.FloatTensor([[0, 1, 2], [1, 2, 0], [2, 1, 0]]).to_sparse()
@@ -34,7 +34,7 @@ def test_simple_forward_online():
 
 def test_simple_forward_batch(adj_batch):
     """Test forward pass with different stacking method."""
-    nnet = GCN_simple(3, [20, 20, 20, 20], 2, 2, dropout=0)
+    nnet = GCN_simple(3, [10, 10], 2, 2, dropout=0)
     # 2 proteins with 2 aminoacids and 3 features each
     v = torch.FloatTensor(
         [[[23.0, 0.0, 2.0], [4.0, 2.0, 0.0]], [[1.0, 1.0, 24.0], [2.0, 1.0, 0.0]],]
@@ -46,7 +46,7 @@ def test_simple_forward_batch(adj_batch):
 
 def test_normalized_forward_batch(adj_batch):
     """Test forward pass with different stacking method."""
-    nnet = GCN_normed(3, [20, 20, 20, 20], 4, 2, 2, dropout=0)
+    nnet = GCN_normed(3, [10, 10], 2, 2, dropout=0)
     # 2 proteins with 2 aminoacids and 3 features each
     v = torch.FloatTensor(
         [[[23.0, 0.0, 2.0], [4.0, 2.0, 0.0]], [[1.0, 1.0, 24.0], [2.0, 1.0, 0.0]],]

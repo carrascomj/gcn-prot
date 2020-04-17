@@ -14,7 +14,7 @@ def test_fit_epoch(data_path, nn_kras):
     """Fit one epoch of train + test."""
     train, test, _ = get_datasets(
         data_path=data_path,
-        nb_nodes=185,
+        nb_nodes=7,
         task_type="classification",
         nb_classes=2,
         split=None,

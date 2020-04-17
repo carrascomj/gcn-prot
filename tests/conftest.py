@@ -38,7 +38,7 @@ def batch(data_path):
     """Define a batch for the KrasHras dataset."""
     train, _, _ = get_datasets(
         data_path=data_path,
-        nb_nodes=185,
+        nb_nodes=7,
         task_type="classification",
         nb_classes=2,
         split=None,
@@ -54,4 +54,4 @@ def batch(data_path):
 @pytest.fixture(scope="module")
 def nn_kras():
     """Define simple GCN for the KrasHras dataset."""
-    return GCN_simple(29, [3], 2, 185, dropout=0)
+    return GCN_simple(29, [3], 2, 7, dropout=0)

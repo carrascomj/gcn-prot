@@ -19,7 +19,7 @@ class Validation:
     def __str__(self):
         """Print in LaTeX tab format if statistics were computed."""
         if self.stats:
-            return r"""\begin{table}[]
+            return r"""$$\begin{table}[]
 \centering
 \begin{tabular}{llll}
 \hline
@@ -28,7 +28,7 @@ Strain 1                              & 140                                     
 \end{tabular}
 \caption{}
 \label{tab:my-table}
-\end{table}"""
+\end{table}$$"""
         else:
             return "Statistics not computed."
 

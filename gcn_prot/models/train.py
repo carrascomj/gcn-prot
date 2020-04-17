@@ -8,6 +8,8 @@ from torch.utils.data import DataLoader
 from gcn_prot.features import transform_input
 from gcn_prot.visualization import plot_epoch
 
+from .utils import calc_accuracy
+
 
 def forward_step(batch, model, training):
     """Pass forward.
@@ -33,13 +35,15 @@ def forward_step(batch, model, training):
 
 
 def run_epoch(
-    model, iterator, optimizer, criterion, debug=False, training=True,
+    model, iterator, optimizer, criterion, debug=False, epoch=None, training=True,
 ):
     """Train an epoch."""
     epoch_loss = 0
+    acc = 0
+    n = len(iterator)
     for i, batch in enumerate(iterator):
         if debug:
-            sys.stdout.write(f"\rIteration {i}        ")
+            sys.stdout.write(f"\rEpoch {epoch} ({i}/{n})            ")
             sys.stdout.flush()
         predictions, labels = forward_step(batch, model, training)
 
@@ -48,7 +52,8 @@ def run_epoch(
         loss.backward()
         optimizer.step()
         epoch_loss += loss.item()
-    return epoch_loss / len(iterator)
+        acc += calc_accuracy(predictions, labels)
+    return epoch_loss / n, acc / n
 
 
 def fit_network(
@@ -98,26 +103,30 @@ def fit_network(
     all_train = []
     all_test = []
     all_epochs = []
+    acc_train = []
+    acc_test = []
     best_test_loss = float("inf")
     for epoch in range(epochs):
         model.train()
-        tr_loss = run_epoch(
-            model, trainloader, optimizer, criterion, debug, training=True
+        tr_loss, tr_acc = run_epoch(
+            model, trainloader, optimizer, criterion, debug, epoch, training=True
         )
         model.eval()
-        va_test = run_epoch(
-            model, testloader, optimizer, criterion, debug, training=False,
+        te_loss, te_acc = run_epoch(
+            model, testloader, optimizer, criterion, debug, epoch, training=False,
         )
 
         all_train.append(tr_loss)
-        all_test.append(va_test)
+        acc_train.append(tr_acc)
+        all_test.append(te_loss)
+        acc_test.append(te_acc)
         all_epochs.append(epoch)
 
-        if va_test < best_test_loss and save:
-            best_test_loss = va_test
+        if te_loss < best_test_loss and save:
+            best_test_loss = te_loss
             torch.save(model.state_dict(), save)
 
         if epoch % plot_every == 0 and epoch != 0:
-            plot_epoch(all_epochs, all_train, all_test, epoch)
+            plot_epoch(all_epochs, all_train, all_test, acc_train, acc_test, epoch)
 
     return model

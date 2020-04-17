@@ -52,3 +52,9 @@ def sparsize(adj, cuda=False, sparsed=True):
     if sparsed:
         out = out.to_sparse()
     return out
+
+
+def calc_accuracy(out, true):
+    """Compute total accuracy of output of NN (CrossEntropyLoss-like)."""
+    prediction = out.min(axis=1).indices.flatten()
+    return (prediction == true.flatten()).sum().item() / len(prediction)
