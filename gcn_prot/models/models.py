@@ -121,7 +121,9 @@ class GCN_normed(nn.Module):
             for in_dim, out_dim in zip([feats] + hidden[:-1], hidden)
         ]
         self.hidden_layers = nn.Sequential(*gc_layers)
-        self.out_layer = nn.Linear(nb_nodes, label)
+        self.out_layer = nn.Sequential(
+            nn.Flatten(), nn.Linear(nb_nodes * hidden[-1], label)
+        )
 
     def forward(self, input):
         """Pass forward GCN model.
@@ -137,7 +139,6 @@ class GCN_normed(nn.Module):
         """
         v, adj = input
         x, _ = self.hidden_layers.forward(input)
-        x = x.sum(axis=-1)
         x = self.out_layer(x)
         return x
 
