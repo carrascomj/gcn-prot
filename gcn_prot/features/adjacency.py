@@ -32,6 +32,18 @@ def euclidean_dist(c):
     return adj_mat
 
 
+def batched_eucl(coord):
+    """Compute adjacency matrix for a batched coordinates Tensor `c`.
+
+    https://github.com/pytorch/pytorch/issues/9406#issuecomment-472269698
+    """
+    B, M, N = coord.shape
+    return t.pairwise_distance(
+        coord[:, :, None].expand(B, M, M, N).reshape((-1, N)),
+        coord[:, None].expand(B, M, M, N).reshape((-1, N)),
+    ).reshape((B, M, M))
+
+
 def binary_dist(c):
     """Calculate euclidean distance.
 
@@ -56,8 +68,8 @@ def binary_dist(c):
 def transform_input(input_nn, training=True):
     """Get adjancecy matrix from the inputs and apply mask."""
     v, c, m, y = input_nn
-    adj = [euclidean_dist(c[prot]) * m[prot] for prot in range(c.shape[0])]
+    # adj = [euclidean_dist(c[prot]) * m[prot] for prot in range(c.shape[0])]
     v = t.autograd.Variable(v.float())
     y = t.stack(y).T
     y = t.autograd.Variable(t.LongTensor([t.where(label == 1)[0][0] for label in y]))
-    return [v, t.stack(adj).float()], y
+    return [v, c.float()], y

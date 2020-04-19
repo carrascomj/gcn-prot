@@ -5,7 +5,7 @@ import sys
 import torch
 from torch.utils.data import DataLoader
 
-from gcn_prot.features import transform_input
+from gcn_prot.features import batched_eucl, transform_input
 from gcn_prot.visualization import plot_epoch
 
 from .utils import calc_accuracy
@@ -25,10 +25,11 @@ def forward_step(batch, model, training):
 
     """
     inputs, labels_onehot = transform_input(batch, training)
+    v, c = inputs
     if model.in_cuda:
-        v, adj = inputs
-        inputs = v.cuda(), adj.cuda()
+        v, c = v.cuda(), c.cuda()
         labels_onehot = labels_onehot.cuda()
+    inputs = v, batched_eucl(c)
     predictions = model(inputs)
 
     return predictions, labels_onehot

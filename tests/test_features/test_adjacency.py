@@ -2,7 +2,7 @@
 
 import torch
 
-from gcn_prot.features import euclidean_dist, transform_input
+from gcn_prot.features import batched_eucl, euclidean_dist, transform_input
 
 
 def test_euclidean():
@@ -16,4 +16,5 @@ def test_transform(data_path, batch):
     """Test transformation of input."""
     input, y = transform_input(batch)
     v, adj = input
+    adj = batched_eucl(adj)
     assert adj.shape == torch.Size([25, 7, 7])
